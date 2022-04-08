@@ -83,20 +83,36 @@ def main() -> None:
     # print(json.dumps(data["shop"]["item"]["items"], indent=2, sort_keys=False))
     items_list = data["shop"]["item"]["items"]
     items_dict = {item["id"]: item for item in items_list}
-
+    items_id_dict = {item["items"][0]["item_id"]: item for item in items_list}
+    discount_items = {
+        ditem["id"]: ditem["discount_price"]
+        for ditem in data["shop"]["discount"][0]["items"]
+    }
     # List discount prices
-    for discount_item in data["shop"]["discount"][0]["items"]:
-        if discount_item["id"] not in items_dict:
-            print(f"Item {discount_item['id']} was not found")
-            continue
-        item = items_dict[discount_item["id"]]
-        original_price = item["dp_price"]
-        sale_price = discount_item["discount_price"]
-        discount = ((original_price - sale_price) / original_price) * 100
-        print(
-            f"'{item['name']}' is on sale for {sale_price}dp ({discount:.1f}% discount)"
-        )
 
+    indent = 0
+    with open("data.lua", "w") as f:
+        f.write("local N, NS = ...\n")
+        f.write("local data = {\n")
+        indent += 1
+        for item in items_id_dict.values():
+            id = item["id"]
+            name = item["name"]
+            item_id = item["items"][0]["item_id"]
+            item_price = item["dp_price"]
+            f.write(indent * "\t")
+            f.write(f"[{item_id}]={{")
+            f.write(f"id={id}, ")
+            f.write(f'name="{name}", ')
+            f.write(f"item_id={item_id}, ")
+            f.write(f"item_price={item_price}, ")
+            if id in discount_items:
+                f.write(f"discount_price={discount_items[id]}, ")
+            f.write("},\n")
+        indent -= 1
+        f.write("}\n")
+        f.write("\n")
+        f.write("NS.data = data")
 
 if __name__ == "__main__":
     main()

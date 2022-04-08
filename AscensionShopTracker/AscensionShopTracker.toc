@@ -1,0 +1,9 @@
+## Interface: 30300
+## Title: Ascension Shop tracker
+## Author: sweepline
+## Notes: Displayes Ascension shop DP prices and discounts in tooltips
+## Version: 0.0.1
+## X-Category: Tooltip
+
+data.lua
+main.lua
