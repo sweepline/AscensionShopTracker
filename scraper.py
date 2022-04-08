@@ -6,10 +6,10 @@ import requests
 
 parser = argparse.ArgumentParser(formatter_class=argparse.RawDescriptionHelpFormatter)
 parser.add_argument("-f", "--from_file", action="store_true")
+parser.add_argument("-o", "--output", action="store")
 # parser.add_argument("-b", "--branch", help="e.g. master", required=True)
 parser.add_argument("username")
 parser.add_argument("password")
-
 
 def data_from_server(username, password):
     # LOGIN
@@ -91,8 +91,13 @@ def main() -> None:
     # List discount prices
 
     indent = 0
-    with open("data.lua", "w") as f:
+
+    output = "data.lua"
+    if args.output is not None:
+        output = args.output
+    with open(output, "w") as f:
         f.write("local N, NS = ...\n")
+        f.write("\n")
         f.write("local data = {\n")
         indent += 1
         for item in items_id_dict.values():
